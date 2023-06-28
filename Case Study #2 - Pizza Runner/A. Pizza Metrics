@@ -1,23 +1,19 @@
 -- A. Pizza Metrics
 -- 1. How many pizzas were ordered?
 
-SELECT
-  COUNT(pizza_id) AS number_of_pizza_ordered
+SELECT COUNT(*) AS number_of_pizza_ordered
 FROM pizza_runner.customer_orders;
 
 -- 2. How many unique customer orders were made?
 
-SELECT
-  customer_id,
-  COUNT(DISTINCT order_id) AS unique_customer_orders
-FROM pizza_runner.customer_orders
-GROUP BY 1;
+SELECT COUNT(DISTINCT order_id) AS unique_order_count
+FROM pizza_runner.customer_orders;
 
 -- 3. How many successful orders were delivered by each runner?
 
 SELECT
   runner_id,
-  COUNT(order_id) AS delivered_orders
+  COUNT(order_id) AS successful_orders
 FROM pizza_runner.runner_orders
 WHERE
   pickup_time != 'null'
@@ -30,12 +26,11 @@ ORDER BY 1;
 
 SELECT
   pizza_name,
-  COUNT(pizza_name) AS number_of_pizzas_delivered
+  COUNT(pizza_name) AS delivered_pizza_count
 FROM pizza_runner.customer_orders AS c
 JOIN pizza_runner.pizza_names AS n ON c.pizza_id = n.pizza_id
 JOIN pizza_runner.runner_orders AS r ON c.order_id = r.order_id
-WHERE
-  pickup_time != 'null'
+WHERE pickup_time != 'null'
   AND distance != 'null'
   AND duration != 'null'
 GROUP BY 1
@@ -43,13 +38,13 @@ ORDER BY 1;
 
 -- 5. How many Vegetarian and Meatlovers were ordered by each customer?
 
-SELECT
-  customer_id,
-  pizza_name,
-  COUNT(pizza_name) AS number_of_pizzas_delivered
-FROM
-  pizza_runner.customer_orders AS c
-JOIN pizza_runner.pizza_names AS n ON c.pizza_id = n.pizza_id
+SELECT 
+  c.customer_id, 
+  p.pizza_name, 
+  COUNT(p.pizza_name) AS number_of_pizzas_delivered
+FROM pizza_runner.customer_orders AS c
+JOIN pizza_runner.pizza_names AS p
+  ON c.pizza_id= p.pizza_id
 GROUP BY 1, 2
 ORDER BY 1;
 
